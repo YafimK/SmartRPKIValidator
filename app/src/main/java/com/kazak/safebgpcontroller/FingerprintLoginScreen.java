@@ -7,13 +7,26 @@ import android.content.pm.PackageManager;
 import android.hardware.fingerprint.FingerprintManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.security.keystore.KeyGenParameterSpec;
+import android.security.keystore.KeyPermanentlyInvalidatedException;
+import android.security.keystore.KeyProperties;
 import android.support.v4.app.ActivityCompat;
 import android.widget.TextView;
 
+import java.io.IOException;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
 import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.CertificateException;
 
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.SecretKey;
 
 public class FingerprintLoginScreen extends Activity {
     private static final String KEY_NAME = "yourKey";
@@ -66,6 +79,18 @@ public class FingerprintLoginScreen extends Activity {
                     generateKey();
                 } catch (FingerprintException e) {
                     e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (CertificateException e) {
+                    e.printStackTrace();
+                } catch (NoSuchAlgorithmException e) {
+                    e.printStackTrace();
+                } catch (InvalidAlgorithmParameterException e) {
+                    e.printStackTrace();
+                } catch (NoSuchProviderException e) {
+                    e.printStackTrace();
+                } catch (KeyStoreException e) {
+                    e.printStackTrace();
                 }
 
                 if (initCipher()) {
@@ -83,7 +108,7 @@ public class FingerprintLoginScreen extends Activity {
 
 //Create the generateKey method that we’ll use to gain access to the Android keystore and generate the encryption key//
 
-    private void generateKey() throws FingerprintException {
+    private void generateKey() throws FingerprintException, KeyStoreException, InvalidAlgorithmParameterException, CertificateException, NoSuchAlgorithmException, IOException, NoSuchProviderException {
         try {
             // Obtain a reference to the Keystore using the standard Android keystore container identifier (“AndroidKeystore”)//
             keyStore = KeyStore.getInstance("AndroidKeyStore");
