@@ -1,8 +1,17 @@
 package com.kazak.safebgpcontroller;
 
+import android.app.Fragment;
+import android.app.FragmentTransaction;
+import android.content.Context;
+import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.FragmentActivity;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -12,9 +21,18 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 public class DashboardActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, SystemStatusFragment.OnFragmentInteractionListener, HomeFragment.OnFragmentInteractionListener {
+    private boolean viewIsAtHome;
+    // Keep a reference to the NetworkFragment, which owns the AsyncTask object
+    // that is used to execute network ops.
+//    private NetworkFragment mNetworkFragment;
+
+    // Boolean telling us whether a download is in progress, so we don't trigger overlapping
+    // downloads with consecutive button clicks.
+    private boolean mDownloading = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,14 +50,26 @@ public class DashboardActivity extends AppCompatActivity
             }
         });
 
+
+
+        //setup the networking module to connect to the validator
+
+//        mNetworkFragment = NetworkFragment.getInstance(getFragmentManager(), "https://www.google.com");
+
+
+
+        //Setup the navigation drawer
+
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
+        drawer.addDrawerListener(toggle);
         toggle.syncState();
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+//        displayView(R.id.home_screen_fragment);
     }
 
     @Override
@@ -47,8 +77,11 @@ public class DashboardActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
+        }
+        if (!viewIsAtHome) { //if the current view is not the News fragment
+            displayView(R.id.nav_view); //display the News fragment
         } else {
-            super.onBackPressed();
+            moveTaskToBack(true);  //If view is in News fragment, exit application
         }
     }
 
@@ -78,24 +111,85 @@ public class DashboardActivity extends AppCompatActivity
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
-        int id = item.getItemId();
+//        int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
+        displayView(item.getItemId());
+        return true;
 
-        } else if (id == R.id.nav_slideshow) {
+//        if (id == R.id.nav_camera) {
+//            // Handle the camera action
+//        } else if (id == R.id.nav_gallery) {
+//                startActivity(new Intent(this, SystemStatus.class));
+//            return true;
+//        } else if (id == R.id.nav_slideshow) {
+//
+//        } else if (id == R.id.nav_manage) {
+//
+//        } else if (id == R.id.nav_share) {
+//
+//        } else if (id == R.id.nav_send) {
+//
+//        }
+//
+//        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+//        drawer.closeDrawer(GravityCompat.START);
+//        return true;
+    }
 
-        } else if (id == R.id.nav_manage) {
+    public void displayView(int viewId) {
+        Fragment fragment = null;
+        String title = getString(R.string.app_name);
 
-        } else if (id == R.id.nav_share) {
+//        String title = getString(R.string.app_name);
 
-        } else if (id == R.id.nav_send) {
+        switch (viewId) {
+            case R.id.home_screen_fragment:
+                fragment = new HomeFragment();
+                title  = "HomeFragment";
+                viewIsAtHome = true;
 
+                break;
+
+            case R.id.system_status_fragment:
+                fragment = new SystemStatusFragment();
+                title  = "SystemStatus";
+                viewIsAtHome = false;
+
+                break;
+//            case R.id.nav_events:
+//                fragment = new EventsFragment();
+//                title = getString(R.string.events_title);
+//                viewIsAtHome = false;
+//                break;
+//
+//            case R.id.nav_gallery:
+//                fragment = new GalleryFragment();
+//                title = getString(R.string.gallery_title);
+//                viewIsAtHome = false;
+//                break;
+//            case R.id.nav_camera:
+//                fragment = new EventsFragment();
+//                title = "Events";
+//                break;
+        }
+        if (fragment != null) {
+            FragmentTransaction ft = getFragmentManager().beginTransaction();
+            ft.replace(R.id.content_frame, fragment);
+            ft.commit();
+        }
+
+        // set the toolbar title
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setTitle(title);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
-        return true;
+
+    }
+
+    @Override
+    public void onFragmentInteraction(Uri uri) {
+
     }
 }
