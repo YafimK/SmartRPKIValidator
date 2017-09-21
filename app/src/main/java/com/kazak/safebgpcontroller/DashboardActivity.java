@@ -109,6 +109,7 @@ public class DashboardActivity extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            System.out.println("sadfsafd");
             return true;
         }
 
