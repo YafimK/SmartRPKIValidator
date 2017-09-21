@@ -2,18 +2,11 @@ package com.kazak.safebgpcontroller;
 
 import android.app.Fragment;
 import android.app.FragmentTransaction;
-import android.content.Context;
-import android.content.Intent;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.FragmentActivity;
-import android.view.View;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -21,7 +14,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
+import android.view.View;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -31,7 +24,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import org.json.JSONObject;
 
 public class DashboardActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, SystemStatusFragment.OnFragmentInteractionListener, HomeFragment.OnFragmentInteractionListener {
+        implements NavigationView.OnNavigationItemSelectedListener, SystemStatusFragment.OnFragmentInteractionListener, HomeFragment.OnFragmentInteractionListener, SettingsFragment.OnFragmentInteractionListener {
     private static final String DEFAULT_SMART_VALIDATOR_ADDRESS = "http://localhost:8080";
     private boolean viewIsAtHome;
     // Keep a reference to the NetworkFragment, which owns the AsyncTask object
@@ -59,11 +52,9 @@ public class DashboardActivity extends AppCompatActivity
         });
 
 
-
         //setup the networking module to connect to the validator
 
 //        mNetworkFragment = NetworkFragment.getInstance(getFragmentManager(), "https://www.google.com");
-
 
 
         //Setup the navigation drawer
@@ -109,7 +100,15 @@ public class DashboardActivity extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-            System.out.println("sadfsafd");
+            viewIsAtHome = false;
+            FragmentTransaction ft = getFragmentManager().beginTransaction();
+            ft.replace(R.id.content_frame, new SettingsFragment());
+            ft.commit();
+
+            // set the toolbar title
+            if (getSupportActionBar() != null) {
+                getSupportActionBar().setTitle("Settings");
+            }
             return true;
         }
 
@@ -154,14 +153,14 @@ public class DashboardActivity extends AppCompatActivity
         switch (viewId) {
             case R.id.home_screen_fragment:
                 fragment = new HomeFragment();
-                title  = "HomeFragment";
+                title = "HomeFragment";
                 viewIsAtHome = true;
 
                 break;
 
             case R.id.system_status_fragment:
                 fragment = new SystemStatusFragment();
-                title  = "SystemStatus";
+                title = "SystemStatus";
                 viewIsAtHome = false;
 
                 break;
@@ -204,26 +203,27 @@ public class DashboardActivity extends AppCompatActivity
 
     @Override
     public void fetchData(final NetworkUpdatableView view, final String requestSourceFragment, String requestPath) {
-        
+
         String requestUrl = DEFAULT_SMART_VALIDATOR_ADDRESS + requestPath;
         final JsonObjectRequest jsObjRequest = new JsonObjectRequest
                 (Request.Method.GET, requestUrl, null, new Response.Listener<JSONObject>() {
 
                     @Override
                     public void onResponse(JSONObject response) {
-                            view.updateViewOnResponse(response);
+                        view.updateViewOnResponse(response);
 //                        return response;
                     }
                 }, new Response.ErrorListener() {
+
+                    Request<? extends Object> request;
 
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         // TODO Auto-generated method stub
 
                     }
-        Request<? extends Object> request;
 
-    });
+                });
         SmartValidatorClient.getInstance(this).addToRequestQueue(jsObjRequest);
     }
 
