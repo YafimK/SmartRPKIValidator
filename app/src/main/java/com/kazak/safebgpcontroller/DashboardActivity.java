@@ -23,8 +23,16 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+
+import org.json.JSONObject;
+
 public class DashboardActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, SystemStatusFragment.OnFragmentInteractionListener, HomeFragment.OnFragmentInteractionListener {
+    private static final String DEFAULT_SMART_VALIDATOR_ADDRESS = "http://localhost:8080";
     private boolean viewIsAtHome;
     // Keep a reference to the NetworkFragment, which owns the AsyncTask object
     // that is used to execute network ops.
@@ -190,6 +198,36 @@ public class DashboardActivity extends AppCompatActivity
 
     @Override
     public void onFragmentInteraction(Uri uri) {
+        System.out.println("luba duba");
+    }
 
+    @Override
+    public void fetchData(final NetworkUpdatableView view, final String requestSourceFragment, String requestPath) {
+        
+        String requestUrl = DEFAULT_SMART_VALIDATOR_ADDRESS + requestPath;
+        final JsonObjectRequest jsObjRequest = new JsonObjectRequest
+                (Request.Method.GET, requestUrl, null, new Response.Listener<JSONObject>() {
+
+                    @Override
+                    public void onResponse(JSONObject response) {
+                            view.updateViewOnResponse(response);
+//                        return response;
+                    }
+                }, new Response.ErrorListener() {
+
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        // TODO Auto-generated method stub
+
+                    }
+        Request<? extends Object> request;
+
+    });
+        SmartValidatorClient.getInstance(this).addToRequestQueue(jsObjRequest);
+    }
+
+    @Override
+    public void cancelPendingRequests(String fragName) {
+        return;
     }
 }
