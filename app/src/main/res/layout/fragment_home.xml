@@ -1,14 +1,60 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:id="@+id/home_screen_fragment"
+    android:id="@+id/ScrollView01"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:fillViewport="true"
     tools:context="com.kazak.safebgpcontroller.HomeFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <RelativeLayout
+        android:id="@+id/home_screen_fragment"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp">
 
-</FrameLayout>
+        <!-- TODO: Update blank fragment layout -->
+
+
+        <com.github.mikephil.charting.charts.PieChart
+            android:id="@+id/roaPieChart"
+            android:layout_width="match_parent"
+            android:layout_height="300dp"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="10dp" />
+
+
+        <com.github.mikephil.charting.charts.PieChart
+            android:id="@+id/bgpPieChart"
+            android:layout_width="match_parent"
+            android:layout_height="300dp"
+            android:layout_below="@+id/roaPieChart"
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="10dp" />
+
+
+        <com.github.mikephil.charting.charts.BarChart
+            android:id="@+id/roaIssueBarChart"
+            android:layout_width="match_parent"
+            android:layout_height="300dp"
+            android:layout_below="@+id/bgpPieChart"
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="10dp" />
+
+
+        <com.github.mikephil.charting.charts.LineChart
+            android:id="@+id/roaIssuesTimelineLineChart"
+            android:layout_width="match_parent"
+            android:layout_height="300dp"
+            android:layout_below="@+id/roaIssueBarChart"
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="10dp" />
+
+    </RelativeLayout>
+
+
+</ScrollView>
+
+
+

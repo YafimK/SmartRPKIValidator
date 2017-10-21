@@ -12,6 +12,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -25,7 +26,7 @@ import org.json.JSONObject;
 
 public class DashboardActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, SystemStatusFragment.OnFragmentInteractionListener, HomeFragment.OnFragmentInteractionListener, SettingsFragment.OnFragmentInteractionListener {
-    private static final String DEFAULT_SMART_VALIDATOR_ADDRESS = "http://localhost:8080";
+    private static final String DEFAULT_SMART_VALIDATOR_ADDRESS = "http://10.0.0.22:8081";
     private boolean viewIsAtHome;
     // Keep a reference to the NetworkFragment, which owns the AsyncTask object
     // that is used to execute network ops.
@@ -41,15 +42,15 @@ public class DashboardActivity extends AppCompatActivity
         setContentView(R.layout.dashboard);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
+//
+//        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+//        fab.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+//                        .setAction("Action", null).show();
+//            }
+//        });
 
 
         //setup the networking module to connect to the validator
@@ -205,11 +206,13 @@ public class DashboardActivity extends AppCompatActivity
     public void fetchData(final NetworkUpdatableView view, final String requestSourceFragment, String requestPath) {
 
         String requestUrl = DEFAULT_SMART_VALIDATOR_ADDRESS + requestPath;
+
         final JsonObjectRequest jsObjRequest = new JsonObjectRequest
                 (Request.Method.GET, requestUrl, null, new Response.Listener<JSONObject>() {
 
                     @Override
                     public void onResponse(JSONObject response) {
+                        Log.i("response",response.toString());
                         view.updateViewOnResponse(response);
 //                        return response;
                     }
@@ -220,6 +223,8 @@ public class DashboardActivity extends AppCompatActivity
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         // TODO Auto-generated method stub
+                        Log.e("responseError",error.toString());
+
 
                     }
 
